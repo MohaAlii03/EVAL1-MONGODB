@@ -116,23 +116,21 @@ router.get('/arrondissement/:num_arrondissement', async (req, res) => {
 //Route8
 router.get('/synthese', async (req, res) => {
     try {
-        // Utilisation de la méthode aggregate de Mongoose pour regrouper et compter les balades par arrondissement
         const syntheseBalades = await Balade.aggregate([
             { 
                 $group: { 
-                    _id: '$code_postal',  // Regrouper par numéro d'arrondissement (code postal)
-                    count: { $sum: 1 }     // Compter le nombre de balades par arrondissement
+                    _id: '$code_postal',  
+                    count: { $sum: 1 }     
                 } 
             }
         ]);
 
-        // Créer un objet pour stocker les résultats par arrondissement
         const syntheseParArrondissement = {};
         syntheseBalades.forEach((item) => {
             syntheseParArrondissement[item._id] = item.count;
         });
 
-        res.json(syntheseParArrondissement); // Renvoyer les résultats sous forme de réponse JSON
+        res.json(syntheseParArrondissement); 
     } catch (error) {
         console.error('Erreur MongoDB :', error);
         res.status(500).json({ error: 'Erreur lors de la récupération du résumé par arrondissement.' });
@@ -142,10 +140,9 @@ router.get('/synthese', async (req, res) => {
 //route9
 router.get('/categories', async (req, res) => {
     try {
-        // Utilisation de la méthode distinct de Mongoose pour récupérer les catégories uniques
         const categories = await Balade.distinct('categorie');
 
-        res.json(categories); // Renvoyer les catégories uniques sous forme de réponse JSON
+        res.json(categories); 
     } catch (error) {
         console.error('Erreur MongoDB :', error);
         res.status(500).json({ error: 'Erreur lors de la récupération des catégories de balades.' });
@@ -154,14 +151,14 @@ router.get('/categories', async (req, res) => {
 
 //Route10
 router.post("/add", async function(req, rep){
-    const balades = req.body ; // l'objet va être envoyé dans la requete 
+    const balades = req.body ;  
     if (!balades.nom_poi,  !balades.adresse,  !balades.categorie) {
         return rep.status(400).json({ message: "Les champs 'nom_poi', 'adresse' et 'categorie' sont obligatoires." });
     };
 
     const nouvelBalade = new Balade(balades);
     try{
-        const reponse = await nouvelBalade.save();// insertOne()
+        const reponse = await nouvelBalade.save();
         rep.json(reponse); 
     } catch (err) {
         console.log(error)
